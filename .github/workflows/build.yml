@@ -6,31 +6,26 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
-
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up Theos environment
         run: |
+          sudo apt update
+          sudo apt install -y ldid dpkg-dev make clang git perl unzip zip curl rsync
           git clone --recursive https://github.com/theos/theos.git $HOME/theos
-          echo "THEOS=$HOME/theos" >> $GITHUB_ENV
+          echo "export THEOS=$HOME/theos" >> $GITHUB_ENV
 
-      - name: Install ldid
-        run: brew install ldid
+      - name: Build dylib
+        run: |
+          make
+          echo "当前目录文件结构如下："
+          ls -R .theos/obj || echo "目录不存在"
 
-            - name: Build dylib
-      run: make
-
-    - name: Debug output
-      run: |
-        echo "当前目录文件结构如下："
-        ls -R .theos/obj || echo "目录不存在"
-
-    
       - name: Upload .dylib
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
-          name: dylib-output
+          name: dylib
           path: .theos/obj/*.dylib
