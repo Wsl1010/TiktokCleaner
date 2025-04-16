@@ -1,21 +1,15 @@
-#import <UIKit/UIKit.h>
-#import <Foundation/Foundation.h>
+%hook DouyinViewController
 
-%hook UIViewController
-
-- (void)viewDidAppear:(BOOL)animated {
+- (void)viewDidLoad {
     %orig;
 
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        UIButton *toggleButton = [UIButton buttonWithType:UIButtonTypeSystem];
-        toggleButton.frame = CGRectMake(20, 100, 60, 30);
-        [toggleButton setTitle:@"净化" forState:UIControlStateNormal];
-        [toggleButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
-        toggleButton.tag = 12345;
-        [toggleButton addTarget:self action:@selector(toggleCleanMode:) forControlEvents:UIControlEventTouchUpInside];
-        [self.view addSubview:toggleButton];
-    });
+    // 添加净化按钮
+    UIButton *cleanButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    cleanButton.frame = CGRectMake(100, 100, 80, 40);
+    [cleanButton setTitle:@"净化" forState:UIControlStateNormal];
+    cleanButton.tag = 12345; // 防止被隐藏
+    [cleanButton addTarget:self action:@selector(toggleCleanMode:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:cleanButton];
 }
 
 // 添加按钮点击事件
@@ -36,7 +30,7 @@
 %new
 - (void)applyCleanMode {
     for (UIView *subview in self.view.subviews) {
-        if (subview.tag != 12345) { // 保留 toggleButton
+        if (subview.tag != 12345) {
             subview.hidden = YES;
         }
     }
