@@ -2,27 +2,28 @@ name: build
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Theos environment
+      - name: Install Theos dependencies
         run: |
-          sudo apt update
-          sudo apt install -y ldid dpkg-dev make clang git perl unzip zip curl rsync
+          brew install perl ldid dpkg make
           git clone --recursive https://github.com/theos/theos.git $HOME/theos
-          echo "export THEOS=$HOME/theos" >> $GITHUB_ENV
+        env:
+          THEOS: ${{ github.workspace }}/theos
 
-      - name: Build dylib
+      - name: Build tweak
         run: |
-          make
-          echo "当前目录文件结构如下："
-          ls -R .theos/obj || echo "目录不存在"
+          export THEOS=${HOME}/theos
+          make clean package
 
       - name: Upload .dylib
         uses: actions/upload-artifact@v3
