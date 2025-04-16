@@ -1,32 +1,32 @@
-name: Build dylib
+name: Build .deb Package
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   build:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Set up Theos
-        run: |
-          git clone --recursive https://github.com/theos/theos.git ~/theos
-          echo 'export THEOS=~/theos' >> ~/.zshrc
-          echo 'export PATH=$THEOS/bin:$PATH' >> ~/.zshrc
-          source ~/.zshrc
+    - name: Install dependencies
+      run: |
+        brew install ldid dpkg
+        git clone --recursive https://github.com/theos/theos.git $HOME/theos
+        echo "export THEOS=$HOME/theos" >> $GITHUB_ENV
 
-      - name: Build tweak
-        env:
-          THEOS: ~/theos
-        run: |
-          export THEOS=~/theos
-          make
+    - name: Build tweak
+      run: |
+        export THEOS=${{ env.THEOS }}
+        make clean package
 
-      - name: Upload .dylib
-        uses: actions/upload-artifact@v3
-        with:
-          name: TiktokCleaner.dylib
-          path: .theos/obj/debug/TiktokCleaner.dylib
+    - name: Upload .deb
+      uses: actions/upload-artifact@v3
+      with:
+        name: deb-package
+        path: ./packages/*.deb
