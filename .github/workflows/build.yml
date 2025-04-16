@@ -20,15 +20,15 @@ jobs:
       - name: Install ldid
         run: brew install ldid
 
-      - name: Build dylib
-        run: |
-          make
-          
-                - name: Debug output
-        run: |
-          echo "当前目录文件结构如下："
-          ls -R .theos/obj || echo "目录不存在"
+            - name: Build dylib
+      run: make
 
+    - name: Debug output
+      run: |
+        echo "当前目录文件结构如下："
+        ls -R .theos/obj || echo "目录不存在"
+
+    
       - name: Upload .dylib
         uses: actions/upload-artifact@v4
         with:
