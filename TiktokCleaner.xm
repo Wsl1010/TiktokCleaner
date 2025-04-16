@@ -1,6 +1,10 @@
 #import <UIKit/UIKit.h>
+
 @interface DouyinViewController : UIViewController
+- (void)applyCleanMode;
+- (void)disableCleanMode;
 @end
+
 %hook DouyinViewController
 
 - (void)viewDidLoad {
