@@ -1,0 +1,8 @@
+Package: com.wsl1010.tiktokcleaner
+Name: TiktokCleaner
+Version: 1.0.0
+Architecture: iphoneos-arm
+Description: A tweak to toggle clean mode in Douyin
+Maintainer: WSL1010
+Author: WSL1010
+Section: Tweaks
