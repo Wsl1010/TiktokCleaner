@@ -1,3 +1,6 @@
+#import <UIKit/UIKit.h>
+@interface DouyinViewController : UIViewController
+@end
 %hook DouyinViewController
 
 - (void)viewDidLoad {
