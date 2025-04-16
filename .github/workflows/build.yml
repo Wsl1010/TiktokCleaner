@@ -1,31 +1,33 @@
-name: Build .deb Package
+name: Build .dylib
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set up dpkg
-        run: sudo apt-get update && sudo apt-get install -y dpkg
+    - name: Install dependencies
+      run: |
+        brew install ldid make dpkg
 
-      - name: Build .deb package
-        run: |
-          mkdir -p build/DEBIAN
-          cp control build/DEBIAN/
-          mkdir -p build/Library/MobileSubstrate/DynamicLibraries
-          cp TiktokCleaner.plist build/Library/MobileSubstrate/DynamicLibraries/
-          cp TiktokCleaner.dylib build/Library/MobileSubstrate/DynamicLibraries/
-          dpkg-deb --build build TiktokCleaner.deb
+    - name: Set up Theos
+      run: |
+        git clone --recursive https://github.com/theos/theos.git ~/theos
+        echo "THEOS=~/theos" >> $GITHUB_ENV
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: TiktokCleaner.deb
-          path: TiktokCleaner.deb
+    - name: Build .dylib with Theos
+      run: |
+        make clean
+        make
+
+    - name: Upload .dylib artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: TiktokCleaner.dylib
+        path: obj/TiktokCleaner.dylib
