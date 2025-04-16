@@ -12,22 +12,19 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Install dependencies
-      run: |
-        brew install ldid make dpkg
-
     - name: Set up Theos
       run: |
-        git clone --recursive https://github.com/theos/theos.git ~/theos
-        echo "THEOS=~/theos" >> $GITHUB_ENV
+        git clone --recursive https://github.com/theos/theos.git $HOME/theos
+        echo "THEOS=$HOME/theos" >> $GITHUB_ENV
 
-    - name: Build .dylib with Theos
+    - name: Build tweak
       run: |
+        export THEOS=$THEOS
         make clean
         make
 
-    - name: Upload .dylib artifact
-      uses: actions/upload-artifact@v3
+    - name: Upload build
+      uses: actions/upload-artifact@v4
       with:
         name: TiktokCleaner.dylib
         path: obj/TiktokCleaner.dylib
