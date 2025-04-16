@@ -1,0 +1,32 @@
+name: Build dylib
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Theos
+        run: |
+          git clone --recursive https://github.com/theos/theos.git ~/theos
+          echo 'export THEOS=~/theos' >> ~/.zshrc
+          echo 'export PATH=$THEOS/bin:$PATH' >> ~/.zshrc
+          source ~/.zshrc
+
+      - name: Build tweak
+        env:
+          THEOS: ~/theos
+        run: |
+          export THEOS=~/theos
+          make
+
+      - name: Upload .dylib
+        uses: actions/upload-artifact@v3
+        with:
+          name: TiktokCleaner.dylib
+          path: .theos/obj/debug/TiktokCleaner.dylib
