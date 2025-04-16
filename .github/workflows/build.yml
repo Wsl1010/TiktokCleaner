@@ -33,8 +33,9 @@ jobs:
       run: |
         ls -R .theos/obj
 
-    - name: Upload .dylib
-      uses: actions/upload-artifact@v3
-      with:
-        name: TiktokCleaner.dylib
-        path: .theos/obj/TiktokCleaner.dylib
+        # - name: Upload .dylib
+#   uses: actions/upload-artifact@v3
+#   with:
+#     name: TiktokCleaner
+#     path: obj/TiktokCleaner.dylib
+
