@@ -2,32 +2,39 @@ name: Build .dylib
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set up Theos
-        run: |
-          git clone --recursive https://github.com/theos/theos.git $HOME/theos
-          echo "THEOS=\$HOME/theos" >> $GITHUB_ENV
+    - name: Set up Theos
+      run: |
+        git clone --recursive https://github.com/theos/theos.git $HOME/theos
+        echo "THEOS=$HOME/theos" >> $GITHUB_ENV
 
-      - name: Install ldid
-        run: brew install ldid
+    - name: Install dependencies
+      run: |
+        brew install perl
+        sudo gem install ffi # 如果你用到 libidid 可加这一行
+        export THEOS=$HOME/theos
 
-      - name: Build tweak
-        run: |
-          export THEOS=$THEOS
-          make clean
-          make
+    - name: Build tweak
+      run: |
+        export THEOS=$HOME/theos
+        make clean package
 
-      - name: Upload build
-        uses: actions/upload-artifact@v4
-        with:
-          name: TiktokCleaner.dylib
-          path: obj/TiktokCleaner.dylib
+    - name: Show build output
+      run: |
+        ls -R .theos/obj
+
+    - name: Upload .dylib
+      uses: actions/upload-artifact@v3
+      with:
+        name: TiktokCleaner.dylib
+        path: .theos/obj/TiktokCleaner.dylib
