@@ -20,7 +20,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        brew install perl
+        brew install perl ldid
         sudo gem install ffi # 如果你用到 libidid 可加这一行
         export THEOS=$HOME/theos
 
@@ -29,6 +29,12 @@ jobs:
         export THEOS=$HOME/theos
         make clean package
 
+   - name: Upload .dylib
+  uses: actions/upload-artifact@v3
+  with:
+    name: dylib-output
+    path: .theos/obj/*.dylib
+    
     - name: Show build output
       run: |
         ls -R .theos/obj
