@@ -2,31 +2,26 @@ name: Build .deb Package
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Install dependencies
-      run: |
-        brew install ldid dpkg
-        git clone --recursive https://github.com/theos/theos.git $HOME/theos
-        echo "export THEOS=$HOME/theos" >> $GITHUB_ENV
+      - name: Set up dpkg-deb
+        run: sudo apt-get update && sudo apt-get install -y dpkg-dev
 
-    - name: Build tweak
-      run: |
-        export THEOS=${{ env.THEOS }}
-        make clean package
+      - name: Build .deb package
+        run: |
+          dpkg-deb --build ./TiktokCleaner ./TiktokCleaner.deb
 
-    - name: Upload .deb
-      uses: actions/upload-artifact@v3
-      with:
-        name: deb-package
-        path: ./packages/*.deb
+      - name: Upload .deb artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TiktokCleaner
+          path: ./TiktokCleaner.deb
